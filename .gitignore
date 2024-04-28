@@ -1,0 +1,9 @@
+.idea
+.fleet
+.vscode
+
+*.dev.vars
+
+node_modules
+.wrangler
+dist

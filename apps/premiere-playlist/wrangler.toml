@@ -1,0 +1,8 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "poc-premiere-playlist"
+main = "src/index.ts"
+compatibility_date = "2024-04-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+SEGMENT_BUCKET_URL = "https://pub-363ee803bd8641c99ee2dc29a29d74e2.r2.dev"
