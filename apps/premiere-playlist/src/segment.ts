@@ -8,5 +8,6 @@ export type TimeSegment = {
   duration: number;
   path: string;
   sequence: number;
+  segmentSequence: number;
   discontinuitySequence: number;
 };

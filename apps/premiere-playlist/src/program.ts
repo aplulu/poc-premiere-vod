@@ -24,7 +24,7 @@ const programs: Program[] = [
         contentName: 'start60',
       },
       {
-        contentName: 'countdown60',
+        contentName: 'countdown10',
       },
       {
         contentName: 'big_buck_bunny',
@@ -43,7 +43,7 @@ const programs: Program[] = [
         contentName: 'start60',
       },
       {
-        contentName: 'countdown60',
+        contentName: 'countdown10',
       },
       {
         contentName: 'big_buck_bunny',
@@ -62,7 +62,7 @@ const programs: Program[] = [
         contentName: 'start60',
       },
       {
-        contentName: 'countdown60',
+        contentName: 'countdown10',
       },
       {
         contentName: 'big_buck_bunny',
@@ -81,7 +81,7 @@ const programs: Program[] = [
         contentName: 'start60',
       },
       {
-        contentName: 'countdown60',
+        contentName: 'countdown10',
       },
       {
         contentName: 'big_buck_bunny',
@@ -135,6 +135,13 @@ export const flattenContents = (program: Program): Content[] => {
   });
 };
 
+/**
+ * コンテンツごとに分かれているセグメントをフラットなTimeSegmentに変換する
+ *
+ * @param program
+ * @param representation
+ * @param segmentBucketUrl
+ */
 export const flattenTimeSegments = (
   program: Program,
   representation: Representation,
@@ -147,6 +154,7 @@ export const flattenTimeSegments = (
   let currentContentName = '';
   let discontinuitySequence = 0;
   for (const content of contents) {
+    // コンテンツが切り替わっていれば、DiscontinuitySequenceを増やす
     if (content.name !== currentContentName) {
       if (currentContentName !== '') {
         discontinuitySequence++;
@@ -159,6 +167,7 @@ export const flattenTimeSegments = (
         duration: segment.duration,
         path: `${segmentBucketUrl}/${content.name}/${representation.name}_${segment.index.toString().padStart(3, '0')}.ts`,
         sequence: timeSegments.length,
+        segmentSequence: segment.index,
         discontinuitySequence,
       });
       startTime += segment.duration;

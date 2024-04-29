@@ -22,11 +22,13 @@ export default {
     ): Promise<Response> => {
       const url = new URL(req.url);
 
+      // HLS
       if (url.pathname.endsWith('.m3u8')) {
         const parts = url.pathname
           .substring(1, url.pathname.length - 5)
           .split('/');
-        console.log(parts);
+
+        // Master Playlist
         if (parts.length === 1) {
           const programId = parts[0];
           const program = getProgramByName(programId);
@@ -49,8 +51,9 @@ export default {
 
           return new Response(lines.join('\n'), {
             status: 200,
-            headers: { 'Content-Type': 'application/x-mpegURL' },
+            headers: { 'Content-Type': 'application/vnd.apple.mpegurl' },
           });
+          // Media Playlist
         } else if (parts.length === 2) {
           const programId = parts[0];
           const representationId = parts[1];
@@ -69,14 +72,9 @@ export default {
             return new Response('Not found', { status: 404 });
           }
 
-          /*
-								const start = new Date();
-								start.setMinutes(8);
-								start.setSeconds(0);
-								program.startTime = start.getTime() / 1000;
-				*/
-
-          console.log(`Start time: ${program.startTime}`);
+          console.log(
+            `Program: ${program.name}, Start time: ${program.startTime}`
+          );
 
           const segments = flattenTimeSegments(
             program,
@@ -85,37 +83,39 @@ export default {
           );
 
           const now = new Date().getTime() / 1000;
-          const bufferTime = 15;
-          const availableSegments = segments.filter(
-            (segment) => segment.startTime <= now + bufferTime
-          );
-
-          const currentSegments = availableSegments.filter(
-            (segment) => segment.startTime + segment.duration >= now
-          );
-
-          if (currentSegments.length === 0) {
-            console.log('Segment not found');
-            return new Response('Not found', { status: 404 });
-          } else if (currentSegments[0].sequence === 0) {
-            const availableDuration = currentSegments.reduce(
-              (acc, segment) => acc + segment.duration,
-              0
+          const segmentSlideWindow = 5;
+          const bufferTime = 60;
+          const availableSegments = segments
+            .filter((segment) => segment.startTime <= now)
+            .filter(
+              (segment) =>
+                segment.startTime + segment.duration >= now - bufferTime
             );
-            // bufferTime分のデータがない場合はエラー
-            if (availableDuration < bufferTime) {
-              console.log('Not enough data');
-              return new Response('Not found', { status: 404 });
-            }
+
+          if (availableSegments.length < segmentSlideWindow) {
+            console.log('Segment not available');
+            return new Response('Not found', { status: 404 });
           }
+
+          const currentSegments = availableSegments.slice(
+            availableSegments.length - segmentSlideWindow
+          );
 
           const lines: string[] = [];
 
-          let discontinuitySequence = currentSegments[0].discontinuitySequence;
+          /**
+           * 先頭の要素が不連続ストリームの場合は、Discontinuity SequenceはそのままにEXT-X-DISCONTINUITYを追加する必要がある。
+           * EXT-X-DISCONTINUITYがプレイリストから消えてからSequence番号をインクリメントする。
+           */
+          let discontinuitySequence =
+            currentSegments[0].discontinuitySequence > 0 &&
+            currentSegments[0].segmentSequence === 0
+              ? currentSegments[0].discontinuitySequence - 1
+              : currentSegments[0].discontinuitySequence;
 
           lines.push('#EXTM3U');
-          lines.push('#EXT-X-VERSION:3');
           lines.push(`#EXT-X-TARGETDURATION:8`);
+          lines.push('#EXT-X-VERSION:3');
           lines.push(`#EXT-X-DISCONTINUITY-SEQUENCE:${discontinuitySequence}`);
           lines.push(`#EXT-X-MEDIA-SEQUENCE:${currentSegments[0].sequence}`);
 
@@ -137,7 +137,7 @@ export default {
 
           return new Response(lines.join('\n'), {
             status: 200,
-            headers: { 'Content-Type': 'application/x-mpegURL' },
+            headers: { 'Content-Type': 'application/vnd.apple.mpegurl' },
           });
         }
       }

@@ -222,68 +222,14 @@ const contents: Content[] = [
     ],
   },
   {
-    name: 'start',
-    segments: [
-      { index: 0, duration: 6 },
-      { index: 1, duration: 1.041667 },
-    ],
-  },
-  {
-    name: 'end',
-    segments: [
-      {
-        index: 0,
-        duration: 6,
-      },
-      {
-        index: 1,
-        duration: 1.041667,
-      },
-    ],
-  },
-  {
-    name: 'offline',
-    segments: [
-      { index: 0, duration: 6 },
-      { index: 1, duration: 1.041667 },
-    ],
-  },
-  {
-    name: 'brb',
-    segments: [
-      { index: 0, duration: 6 },
-      { index: 1, duration: 1.041667 },
-    ],
-  },
-  {
-    name: 'countdown60',
+    name: 'countdown10',
     segments: [
       { index: 0, duration: 6.006 },
       { index: 1, duration: 4.004 },
       {
         index: 2,
-        duration: 6.006,
+        duration: 1.568233,
       },
-      { index: 3, duration: 4.004 },
-      { index: 4, duration: 6.006 },
-      {
-        index: 5,
-        duration: 4.004,
-      },
-      { index: 6, duration: 6.006 },
-      { index: 7, duration: 4.004 },
-      {
-        index: 8,
-        duration: 6.006,
-      },
-      { index: 9, duration: 4.004 },
-      { index: 10, duration: 6.006 },
-      {
-        index: 11,
-        duration: 4.004,
-      },
-      { index: 12, duration: 6.006 },
-      { index: 13, duration: 1.001 },
     ],
   },
   {
@@ -301,7 +247,7 @@ const contents: Content[] = [
       { index: 9, duration: 4 },
       { index: 10, duration: 6 },
       { index: 11, duration: 4 },
-      { index: 12, duration: 0.041667 },
+      //      { index: 12, duration: 0.041667 },
     ],
   },
   {
@@ -319,7 +265,7 @@ const contents: Content[] = [
       { index: 9, duration: 4 },
       { index: 10, duration: 6 },
       { index: 11, duration: 4 },
-      { index: 12, duration: 0.041667 },
+      //      { index: 12, duration: 0.041667 },
     ],
   },
 ];
